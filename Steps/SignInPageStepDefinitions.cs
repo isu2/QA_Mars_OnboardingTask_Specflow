@@ -1,44 +1,66 @@
+using System;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using QA_Mars_OnboardingTaskSpecflow.Pages;
 using TechTalk.SpecFlow;
 using Xunit;
 
 namespace QA_Mars_OnboardingTaskSpecflow.Steps
-
 {
     [Binding]
     public class SignInPageStepDefinitions
     {
         private readonly IWebDriver driver;
         private readonly SignInPage signInPage;
+
         public SignInPageStepDefinitions(IWebDriver driver)
         {
             this.driver = driver;
             signInPage = new SignInPage(driver);
         }
 
-        [Given(@"I am on the home page")]
-        public void GivenIAmOnTheHomePage()
+        [Given(@"I am on the login page by clicking Sign In button")]
+        public void GivenIAmOnTheLoginPageByClickingSignInButton()
         {
             signInPage.NavigateToSignInPage();
-        }
-
-        [When(@"I click on the sign-in button")]
-        public void WhenIClickOnTheSign_InButton()
-        {
             signInPage.ClickOnTheSignInButton();
         }
 
-        [When(@"I enter the username ""(.*)"" and password ""(.*)""")]
-        public void WhenIEnterTheUsernameAndPassword(string username, string password)
+        [When(@"I enter username ""(.*)"" and password ""(.*)""")]
+        public void WhenIEnterUsernameAndPassword(string username, string password)
         {
-            signInPage.EnterCredentials(username, password); // Make sure these fields exist and are interactable on the page
+            signInPage.EnterCredentials(username, password);
         }
 
-        [Then(@"I click the login button")]
-        public void ThenIClickTheLoginButton()
+        [When(@"I click on the Login button")]
+        public void WhenIClickOnTheLoginButton()
         {
-            signInPage.ClickLoginButton(); // Ensure this clicks the actual button on the sign-in page
+            signInPage.ClickLoginButton();
+        }
+
+        [Then(@"I am able to sign in to the profile page")]
+        public void ThenIAmAbleToSignInToTheProfilePage()
+        {
+            // Wait for the profile page to load
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            wait.Until(driver => driver.Url.Contains("/Account/Profile"));
+
+            Assert.Contains("/Account/Profile", driver.Url);
+        }
+
+        [Then(@"I should see a pop-up to verify email")]
+
+        public void ThenIShouldSeeAPop_UpToVerifyEmail()
+        {
+            Assert.True(signInPage.IsPopUpDisplayed());
+        }
+
+        [Then(@"I should see an error message near the blank field")]
+
+        public void ThenIShouldSeeAnErrorMessageNearTheBlankField()
+        {
+            Assert.True(signInPage.IsErrorMessageDisplayed());
+
         }
     }
 }
